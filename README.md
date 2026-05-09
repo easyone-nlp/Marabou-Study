@@ -10,10 +10,11 @@ verification example.
 - `problem2/`: external model experiment.
   - `train_model.py`: generates a synthetic 8x8 bars dataset, trains a small
     ReLU MLP, and exports it to Marabou `.nnet`.
-  - `test.py`: runs Marabou verification for an L-infinity robustness query.
-  - `artifacts/tiny_bars.nnet`: exported model used by `test.py`.
+  - `verify_marabou.py`: implements the Marabou L-infinity robustness query.
+  - `artifacts/tiny_bars.nnet`: exported model used by the verification script.
   - `artifacts/verification_eps_0.02.json`: UNSAT robustness result.
   - `artifacts/verification_eps_0.3.json`: SAT counterexample result.
+- `test.py`: repository-level entry point that calls the Problem 2 verifier.
 - `requirements.txt`: Python dependencies for the assignment scripts.
 
 ## Environment
@@ -38,8 +39,8 @@ Marabou and set `MARABOU_ROOT` to that clone:
 export MARABOU_ROOT=/path/to/Marabou
 ```
 
-`problem2/test.py` checks `MARABOU_ROOT` first, then falls back to the installed
-`maraboupy` package.
+`problem2/verify_marabou.py` checks `MARABOU_ROOT` first, then falls back to the
+installed `maraboupy` package.
 
 ## Run Problem 2
 
@@ -48,6 +49,7 @@ From the repository root:
 ```bash
 cd problem2
 python train_model.py
+cd ..
 python test.py --epsilon 0.02 --timeout 30
 python test.py --epsilon 0.3 --timeout 30
 ```
@@ -55,7 +57,7 @@ python test.py --epsilon 0.3 --timeout 30
 Observed results:
 
 - `epsilon=0.02`: `UNSAT`, no checked target class can beat the predicted class
-  inside the perturbation box.
+  by the required margin inside the perturbation box.
 - `epsilon=0.3`: `SAT`, Marabou finds counterexamples in the larger
   perturbation box.
 

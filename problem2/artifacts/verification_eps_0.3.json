@@ -1,27 +1,30 @@
 {
   "model": "artifacts/tiny_bars.nnet",
   "epsilon": 0.3,
+  "margin": 0.05,
   "timeout_per_target_seconds": 30,
   "sample_label": 0,
   "sample_prediction": 0,
   "sample_prediction_name": "vertical_bar",
-  "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class in that box.",
+  "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class by the required margin in that box.",
   "overall_result": "SAT",
   "per_target": [
     {
       "target_class": 1,
       "target_name": "horizontal_bar",
       "result": "SAT",
-      "runtime_seconds": 0.0031163524836301804,
+      "runtime_seconds": 0.0029685134068131447,
+      "margin": 0.05,
       "counterexample": {
         "target_class": 1,
         "target_name": "horizontal_bar",
         "linf_distance": 0.30000000000000004,
-        "predicted_from_counterexample": 0,
+        "predicted_from_counterexample": 1,
+        "target_minus_prediction": 0.050000000000000044,
         "outputs": [
-          1.3113357222276913,
-          1.3113357222276911,
-          -4.255485837643702
+          1.2958451045677208,
+          1.3458451045677209,
+          -4.26818939026228
         ],
         "input_first_16_values": [
           0.0,
@@ -47,20 +50,22 @@
       "target_class": 2,
       "target_name": "diagonal_bar",
       "result": "SAT",
-      "runtime_seconds": 0.0021424805745482445,
+      "runtime_seconds": 0.0021316558122634888,
+      "margin": 0.05,
       "counterexample": {
         "target_class": 2,
         "target_name": "diagonal_bar",
         "linf_distance": 0.30000000000000004,
-        "predicted_from_counterexample": 0,
+        "predicted_from_counterexample": 2,
+        "target_minus_prediction": 0.04999999999999871,
         "outputs": [
-          0.5051093108964374,
-          -2.645083626761652,
-          0.505109310896435
+          0.48229868563152567,
+          -2.643705060259175,
+          0.5322986856315244
         ],
         "input_first_16_values": [
           0.0,
-          0.15207806776021648,
+          0.1676011665722786,
           0.0,
           0.5938555717468261,
           0.0,

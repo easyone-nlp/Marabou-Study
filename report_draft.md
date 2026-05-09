@@ -24,22 +24,22 @@ L-infinity perturbation:
 
 All perturbed pixel values are constrained to stay in `[0, 1]`. For each target
 class different from the predicted class, Marabou checks whether there exists a
-counterexample where the target output is at least as large as the original
-predicted output. If such an input exists, the result is `SAT`; otherwise the
-target is verified as impossible within the perturbation box and the result is
-`UNSAT`.
+counterexample where the target output is larger than the original predicted
+output by the configured margin. If such an input exists, the result is `SAT`;
+otherwise the target is verified as impossible within the perturbation box and
+the result is `UNSAT`.
 
 ## Results
 
 For `epsilon=0.02`, Marabou returned `UNSAT` for both target classes. This means
 that, for the selected sample and this small perturbation radius, no checked
-target class can beat the original predicted class. The selected input is
-therefore verified robust within that perturbation box.
+target class can beat the original predicted class by the required margin. The
+selected input is therefore verified robust within that perturbation box.
 
 For `epsilon=0.3`, Marabou returned `SAT` for both target classes. This larger
 perturbation radius allows Marabou to find counterexamples where a target class
-ties or reaches the original predicted class output. This shows that the
-verification result depends strongly on the perturbation radius.
+exceeds the original predicted class output by the required margin. This shows
+that the verification result depends strongly on the perturbation radius.
 
 The saved JSON outputs are:
 

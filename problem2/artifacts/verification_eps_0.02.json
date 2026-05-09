@@ -1,25 +1,28 @@
 {
   "model": "artifacts/tiny_bars.nnet",
   "epsilon": 0.02,
+  "margin": 0.05,
   "timeout_per_target_seconds": 30,
   "sample_label": 0,
   "sample_prediction": 0,
   "sample_prediction_name": "vertical_bar",
-  "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class in that box.",
+  "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class by the required margin in that box.",
   "overall_result": "UNSAT",
   "per_target": [
     {
       "target_class": 1,
       "target_name": "horizontal_bar",
       "result": "UNSAT",
-      "runtime_seconds": 0.0018485737964510918,
+      "runtime_seconds": 0.0014881612733006477,
+      "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 2,
       "target_name": "diagonal_bar",
       "result": "UNSAT",
-      "runtime_seconds": 0.0008937474340200424,
+      "runtime_seconds": 0.0015977425500750542,
+      "margin": 0.05,
       "counterexample": null
     }
   ]

@@ -23,9 +23,9 @@ python -m pip install -r requirements.txt
 On the assignment machine used for this run, the prebuilt `maraboupy==2.0.0`
 wheel could be imported, but the solver exited during `solve()`. To make the
 run reproducible in that environment, Marabou was built from the cloned source
-tree. The `test.py` script checks `MARABOU_ROOT`; if it points to a Marabou
-source checkout with a built `maraboupy/MarabouCore...so`, that local build is
-used before falling back to the installed `maraboupy` package.
+tree. The `verify_marabou.py` script checks `MARABOU_ROOT`; if it points to a
+Marabou source checkout with a built `maraboupy/MarabouCore...so`, that local
+build is used before falling back to the installed `maraboupy` package.
 
 Generic source-build flow:
 
@@ -50,6 +50,7 @@ Train the model and export it to `.nnet`:
 ```bash
 cd problem2
 python train_model.py
+cd ..
 ```
 
 Run Marabou verification:
@@ -58,13 +59,16 @@ Run Marabou verification:
 python test.py --epsilon 0.02 --timeout 30
 ```
 
+The repository-level `test.py` is the entry point. It calls
+`problem2/verify_marabou.py`, which contains the actual Marabou query.
+
 Observed results:
 
 - `epsilon=0.02`: `UNSAT` for both non-predicted target classes. The selected
   vertical-bar sample is verified robust within this perturbation box.
 - `epsilon=0.3`: `SAT` for both target classes. Marabou finds inputs inside the
-  larger perturbation box where the target output ties or reaches the original
-  class output.
+  larger perturbation box where the target output exceeds the original class
+  output by the configured margin.
 
 ## Query
 
@@ -74,12 +78,16 @@ input `x'` such that:
 
 - `||x' - x||_inf <= epsilon`
 - all pixels remain in `[0, 1]`
-- the target class score is at least the predicted class score
+- the target class score is at least `margin` larger than the predicted class
+  score
 
 Interpretation:
 
 - `UNSAT`: no adversarial example was found for the checked target, so the
   predicted class is verified against that target within the epsilon box.
 - `SAT`: Marabou found a counterexample in the epsilon box.
+
+The default margin is `0.05`. This avoids treating near-ties between class
+outputs as meaningful counterexamples.
 
 The JSON result is saved to `artifacts/verification_eps_<epsilon>.json`.
