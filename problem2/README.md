@@ -14,29 +14,30 @@ The dataset is generated locally with a fixed seed. It is not part of Marabou's
 
 ## Environment
 
-The tested environment is:
+Install dependencies:
 
 ```bash
-/home/dilab/anaconda3/envs/deepxplore/bin/python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
-On this machine, the prebuilt `maraboupy==2.0.0` wheel could be imported, but
-the solver exited during `solve()`. To make the run reproducible here, Marabou
-was built from the cloned source tree with the Python 3.11 `deepxplore`
-environment. The `test.py` script inserts the Marabou repository root into
-`sys.path`, so it uses the locally built `maraboupy/MarabouCore...so` when it is
-available.
+On the assignment machine used for this run, the prebuilt `maraboupy==2.0.0`
+wheel could be imported, but the solver exited during `solve()`. To make the
+run reproducible in that environment, Marabou was built from the cloned source
+tree. The `test.py` script checks `MARABOU_ROOT`; if it points to a Marabou
+source checkout with a built `maraboupy/MarabouCore...so`, that local build is
+used before falling back to the installed `maraboupy` package.
 
-The source build used:
+Generic source-build flow:
 
 ```bash
-/home/dilab/anaconda3/envs/deepxplore/bin/python -m pip install cmake maraboupy==2.0.0
-/home/dilab/anaconda3/envs/deepxplore/bin/cmake -S . -B build \
+git clone https://github.com/NeuralNetworkVerification/Marabou.git
+cd Marabou
+python -m pip install cmake maraboupy==2.0.0
+cmake -S . -B build \
   -DCMAKE_BUILD_TYPE=Release \
-  -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-  -DOPENBLAS_DIR=/home/dilab/Desktop/Jiwon/ResNet-18/Marabou/tools/OpenBLAS-0.3.19 \
-  -DPYTHON_EXECUTABLE=/home/dilab/anaconda3/envs/deepxplore/bin/python
-/home/dilab/anaconda3/envs/deepxplore/bin/cmake --build build -j 4
+  -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+cmake --build build -j 4
+export MARABOU_ROOT=/path/to/Marabou
 ```
 
 Note: OpenBLAS CPU autodetection failed under the QEMU virtual CPU, so OpenBLAS
@@ -47,14 +48,14 @@ was manually built once with `TARGET=NEHALEM` before rerunning CMake.
 Train the model and export it to `.nnet`:
 
 ```bash
-cd /home/dilab/Desktop/Jiwon/ResNet-18/Marabou/problem2
-/home/dilab/anaconda3/envs/deepxplore/bin/python train_model.py
+cd problem2
+python train_model.py
 ```
 
 Run Marabou verification:
 
 ```bash
-/home/dilab/anaconda3/envs/deepxplore/bin/python test.py --epsilon 0.02 --timeout 30
+python test.py --epsilon 0.02 --timeout 30
 ```
 
 Observed results:

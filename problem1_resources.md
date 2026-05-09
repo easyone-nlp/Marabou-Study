@@ -1,6 +1,6 @@
 # Problem 1: Explore the Marabou Resources Directory
 
-Working directory: `/home/dilab/Desktop/Jiwon/ResNet-18/Marabou`
+Working directory: local clone of the official Marabou repository
 
 Repository checked: `https://github.com/NeuralNetworkVerification/Marabou`
 

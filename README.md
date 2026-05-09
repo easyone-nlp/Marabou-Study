@@ -18,12 +18,6 @@ verification example.
 
 ## Environment
 
-The tested Python environment is:
-
-```bash
-/home/dilab/anaconda3/envs/deepxplore/bin/python
-```
-
 Install Python dependencies:
 
 ```bash
@@ -41,7 +35,7 @@ exited during `solve()`. The working run therefore used a source build of
 Marabou and set `MARABOU_ROOT` to that clone:
 
 ```bash
-export MARABOU_ROOT=/home/dilab/Desktop/Jiwon/ResNet-18/Marabou
+export MARABOU_ROOT=/path/to/Marabou
 ```
 
 `problem2/test.py` checks `MARABOU_ROOT` first, then falls back to the installed
