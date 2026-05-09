@@ -1,0 +1,4 @@
+cmake
+torch
+numpy
+maraboupy==2.0.0
