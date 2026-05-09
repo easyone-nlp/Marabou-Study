@@ -1,0 +1,82 @@
+{
+  "model": "artifacts/tiny_bars.nnet",
+  "epsilon": 0.3,
+  "timeout_per_target_seconds": 30,
+  "sample_label": 0,
+  "sample_prediction": 0,
+  "sample_prediction_name": "vertical_bar",
+  "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class in that box.",
+  "overall_result": "SAT",
+  "per_target": [
+    {
+      "target_class": 1,
+      "target_name": "horizontal_bar",
+      "result": "SAT",
+      "runtime_seconds": 0.0031163524836301804,
+      "counterexample": {
+        "target_class": 1,
+        "target_name": "horizontal_bar",
+        "linf_distance": 0.30000000000000004,
+        "predicted_from_counterexample": 0,
+        "outputs": [
+          1.3113357222276913,
+          1.3113357222276911,
+          -4.255485837643702
+        ],
+        "input_first_16_values": [
+          0.0,
+          0.0,
+          0.0,
+          0.5938555717468261,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.682850432395935,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    {
+      "target_class": 2,
+      "target_name": "diagonal_bar",
+      "result": "SAT",
+      "runtime_seconds": 0.0021424805745482445,
+      "counterexample": {
+        "target_class": 2,
+        "target_name": "diagonal_bar",
+        "linf_distance": 0.30000000000000004,
+        "predicted_from_counterexample": 0,
+        "outputs": [
+          0.5051093108964374,
+          -2.645083626761652,
+          0.505109310896435
+        ],
+        "input_first_16_values": [
+          0.0,
+          0.15207806776021648,
+          0.0,
+          0.5938555717468261,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.31698485761880874,
+          0.32124447375535964,
+          0.0,
+          0.682850432395935,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  ]
+}

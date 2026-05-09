@@ -1,0 +1,21 @@
+{
+  "dataset": "Synthetic 8x8 BarsDataset generated in train_model.py",
+  "classes": [
+    "vertical_bar",
+    "horizontal_bar",
+    "diagonal_bar"
+  ],
+  "architecture": "64 -> 8 ReLU -> 3",
+  "seed": 7,
+  "samples_per_class": 240,
+  "train_accuracy": 1.0,
+  "test_accuracy": 1.0,
+  "sample_index_in_test_split": 0,
+  "sample_label": 0,
+  "sample_prediction": 0,
+  "sample_logits": [
+    5.6500420570373535,
+    -4.213935375213623,
+    -5.431303024291992
+  ]
+}
