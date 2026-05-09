@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+
+# Environments
+.venv/
+venv/
+env/
+
+# Marabou source/build directories should stay outside this study repo
+Marabou/
+build/
+tools/
+resources/
+deps/
+maraboupy/MarabouCore*.so
+
+# Local logs and temporary files
+*.log
+*.tmp
+
+# Report build intermediates
+*.aux
+*.log
+*.out
+*.toc
