@@ -1,85 +1,121 @@
 {
-  "model": "artifacts/tiny_cifar_mlp.nnet",
+  "model": "artifacts/tiny_emnist_mlp.nnet",
   "epsilon": 0.2,
   "margin": 0.05,
   "timeout_per_target_seconds": 30,
-  "sample_label": 7,
-  "sample_prediction": 7,
-  "sample_prediction_name": "horse",
-  "dataset": "CIFAR-10 test/train data loaded with torchvision.datasets.CIFAR10",
-  "architecture": "64 -> 32 ReLU -> 10",
+  "sample_label": 0,
+  "sample_prediction": 0,
+  "sample_prediction_name": "0",
+  "dataset": "EMNIST Digits loaded with torchvision.datasets.EMNIST",
+  "architecture": "196 -> 32 ReLU -> 10",
   "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class by the required margin in that box.",
-  "overall_result": "UNSAT",
+  "overall_result": "SAT",
   "per_target": [
     {
-      "target_class": 0,
-      "target_name": "airplane",
-      "result": "UNSAT",
-      "runtime_seconds": 0.003426896408200264,
-      "margin": 0.05,
-      "counterexample": null
-    },
-    {
       "target_class": 1,
-      "target_name": "automobile",
+      "target_name": "1",
       "result": "UNSAT",
-      "runtime_seconds": 0.0025038905441761017,
+      "runtime_seconds": 0.014843950048089027,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 2,
-      "target_name": "bird",
+      "target_name": "2",
       "result": "UNSAT",
-      "runtime_seconds": 0.0024330150336027145,
+      "runtime_seconds": 2.8706181291490793,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 3,
-      "target_name": "cat",
+      "target_name": "3",
       "result": "UNSAT",
-      "runtime_seconds": 0.0024138614535331726,
+      "runtime_seconds": 1.9404397662729025,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 4,
-      "target_name": "deer",
+      "target_name": "4",
       "result": "UNSAT",
-      "runtime_seconds": 0.0024223271757364273,
+      "runtime_seconds": 0.9697079584002495,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 5,
-      "target_name": "dog",
+      "target_name": "5",
       "result": "UNSAT",
-      "runtime_seconds": 0.002420889213681221,
+      "runtime_seconds": 3.46929245069623,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 6,
-      "target_name": "frog",
+      "target_name": "6",
       "result": "UNSAT",
-      "runtime_seconds": 0.00241289846599102,
+      "runtime_seconds": 0.7853308618068695,
+      "margin": 0.05,
+      "counterexample": null
+    },
+    {
+      "target_class": 7,
+      "target_name": "7",
+      "result": "UNSAT",
+      "runtime_seconds": 0.1969531774520874,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 8,
-      "target_name": "ship",
-      "result": "UNSAT",
-      "runtime_seconds": 0.002405492588877678,
+      "target_name": "8",
+      "result": "SAT",
+      "runtime_seconds": 0.01843474991619587,
       "margin": 0.05,
-      "counterexample": null
+      "counterexample": {
+        "target_class": 8,
+        "target_name": "8",
+        "linf_distance": 0.2,
+        "predicted_from_counterexample": 8,
+        "target_minus_prediction": 0.05000000000000426,
+        "outputs": [
+          11.759203316537103,
+          -23.267621181189806,
+          -8.580342110453984,
+          -13.589340545076075,
+          -8.287403777017396,
+          -4.177445713849995,
+          -5.112646679510726,
+          -24.498982671620006,
+          11.809203316537108,
+          -10.131317884286052
+        ],
+        "input_first_16_values": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
     },
     {
       "target_class": 9,
-      "target_name": "truck",
+      "target_name": "9",
       "result": "UNSAT",
-      "runtime_seconds": 0.0024204663932323456,
+      "runtime_seconds": 0.8487176392227411,
       "margin": 0.05,
       "counterexample": null
     }

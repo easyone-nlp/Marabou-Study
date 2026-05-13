@@ -1,85 +1,85 @@
 {
-  "model": "artifacts/tiny_cifar_mlp.nnet",
+  "model": "artifacts/tiny_emnist_mlp.nnet",
   "epsilon": 0.02,
   "margin": 0.05,
   "timeout_per_target_seconds": 30,
-  "sample_label": 7,
-  "sample_prediction": 7,
-  "sample_prediction_name": "horse",
-  "dataset": "CIFAR-10 test/train data loaded with torchvision.datasets.CIFAR10",
-  "architecture": "64 -> 32 ReLU -> 10",
+  "sample_label": 0,
+  "sample_prediction": 0,
+  "sample_prediction_name": "0",
+  "dataset": "EMNIST Digits loaded with torchvision.datasets.EMNIST",
+  "architecture": "196 -> 32 ReLU -> 10",
   "interpretation": "SAT means at least one adversarial counterexample exists in the epsilon box; UNSAT means no checked target class can beat the predicted class by the required margin in that box.",
   "overall_result": "UNSAT",
   "per_target": [
     {
-      "target_class": 0,
-      "target_name": "airplane",
-      "result": "UNSAT",
-      "runtime_seconds": 0.005530130118131638,
-      "margin": 0.05,
-      "counterexample": null
-    },
-    {
       "target_class": 1,
-      "target_name": "automobile",
+      "target_name": "1",
       "result": "UNSAT",
-      "runtime_seconds": 0.002404218539595604,
+      "runtime_seconds": 0.008386518806219101,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 2,
-      "target_name": "bird",
+      "target_name": "2",
       "result": "UNSAT",
-      "runtime_seconds": 0.002324586734175682,
+      "runtime_seconds": 0.0074263885617256165,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 3,
-      "target_name": "cat",
+      "target_name": "3",
       "result": "UNSAT",
-      "runtime_seconds": 0.002312740311026573,
+      "runtime_seconds": 0.006700308993458748,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 4,
-      "target_name": "deer",
+      "target_name": "4",
       "result": "UNSAT",
-      "runtime_seconds": 0.0022906698286533356,
+      "runtime_seconds": 0.006626613438129425,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 5,
-      "target_name": "dog",
+      "target_name": "5",
       "result": "UNSAT",
-      "runtime_seconds": 0.0023661572486162186,
+      "runtime_seconds": 0.006649831309914589,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 6,
-      "target_name": "frog",
+      "target_name": "6",
       "result": "UNSAT",
-      "runtime_seconds": 0.0023372508585453033,
+      "runtime_seconds": 0.006672779098153114,
+      "margin": 0.05,
+      "counterexample": null
+    },
+    {
+      "target_class": 7,
+      "target_name": "7",
+      "result": "UNSAT",
+      "runtime_seconds": 0.006122082471847534,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 8,
-      "target_name": "ship",
+      "target_name": "8",
       "result": "UNSAT",
-      "runtime_seconds": 0.0023571178317070007,
+      "runtime_seconds": 0.006171194836497307,
       "margin": 0.05,
       "counterexample": null
     },
     {
       "target_class": 9,
-      "target_name": "truck",
+      "target_name": "9",
       "result": "UNSAT",
-      "runtime_seconds": 0.002306818962097168,
+      "runtime_seconds": 0.006188234314322472,
       "margin": 0.05,
       "counterexample": null
     }

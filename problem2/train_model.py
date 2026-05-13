@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Train a small CIFAR-10 model and export it to Marabou's .nnet format.
+"""Train a small EMNIST model and export it to Marabou's .nnet format.
 
 Problem 2 asks for a model and dataset that are not already included in the
-Marabou resources directory. This script uses the external CIFAR-10 dataset from
-the local torchvision cache, preprocesses each image to 8x8 grayscale, trains a
+Marabou resources directory. This script uses the external EMNIST Digits dataset
+through torchvision, preprocesses each 28x28 image to 14x14 grayscale, trains a
 small fully connected ReLU network, and writes the network in Marabou's .nnet
 format.
 """
@@ -20,29 +20,19 @@ import torch.nn.functional as F
 from PIL import Image
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
-from torchvision.datasets import CIFAR10
+from torchvision.datasets import EMNIST
 
 
-INPUT_SIZE = 64
+INPUT_SIZE = 196
 HIDDEN_SIZE = 32
 OUTPUT_SIZE = 10
 SEED = 7
-CLASS_NAMES = [
-    "airplane",
-    "automobile",
-    "bird",
-    "cat",
-    "deer",
-    "dog",
-    "frog",
-    "horse",
-    "ship",
-    "truck",
-]
+SPLIT = "digits"
+CLASS_NAMES = [str(i) for i in range(10)]
 
 
-class TinyCifarMLP(nn.Module):
-    """Small fully connected ReLU network: 64 -> 32 -> 10."""
+class TinyEmnistMLP(nn.Module):
+    """Small fully connected ReLU network: 196 -> 32 -> 10."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -56,13 +46,11 @@ class TinyCifarMLP(nn.Module):
         return self.net(x)
 
 
-def preprocess_cifar_images(images: np.ndarray) -> np.ndarray:
-    """Convert CIFAR RGB images to flattened 8x8 grayscale inputs in [0, 1]."""
+def preprocess_emnist_images(images: torch.Tensor) -> np.ndarray:
+    """Convert EMNIST 28x28 images to flattened 14x14 inputs in [0, 1]."""
 
-    rgb = images.astype(np.float32) / 255.0
-    gray = 0.299 * rgb[..., 0] + 0.587 * rgb[..., 1] + 0.114 * rgb[..., 2]
-    tensor = torch.from_numpy(gray).unsqueeze(1)
-    pooled = F.avg_pool2d(tensor, kernel_size=4, stride=4)
+    tensor = images.to(torch.float32).unsqueeze(1) / 255.0
+    pooled = F.avg_pool2d(tensor, kernel_size=2, stride=2)
     return pooled.squeeze(1).reshape(len(images), -1).numpy().astype(np.float32)
 
 
@@ -78,20 +66,25 @@ def balanced_subset(x: np.ndarray, y: np.ndarray, per_class: int, seed: int) -> 
     return x[selected], y[selected]
 
 
-def load_cifar10_dataset(data_root: Path, train_per_class: int, test_per_class: int) -> tuple:
+def load_emnist_dataset(
+    data_root: Path,
+    train_per_class: int,
+    test_per_class: int,
+    download: bool,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     try:
-        train_set = CIFAR10(root=str(data_root), train=True, download=False)
-        test_set = CIFAR10(root=str(data_root), train=False, download=False)
+        train_set = EMNIST(root=str(data_root), split=SPLIT, train=True, download=download)
+        test_set = EMNIST(root=str(data_root), split=SPLIT, train=False, download=download)
     except RuntimeError as exc:
         raise FileNotFoundError(
-            "CIFAR-10 was not found in the requested data root. Place the "
-            "cifar-10-batches-py directory there or pass --data-root."
+            "EMNIST Digits was not found in the requested data root. Run once "
+            "with --download or pass --data-root pointing to an existing EMNIST cache."
         ) from exc
 
-    x_train = preprocess_cifar_images(train_set.data)
-    y_train = np.array(train_set.targets, dtype=np.int64)
-    x_test = preprocess_cifar_images(test_set.data)
-    y_test = np.array(test_set.targets, dtype=np.int64)
+    x_train = preprocess_emnist_images(train_set.data)
+    y_train = train_set.targets.numpy().astype(np.int64)
+    x_test = preprocess_emnist_images(test_set.data)
+    y_test = test_set.targets.numpy().astype(np.int64)
 
     return (
         *balanced_subset(x_train, y_train, train_per_class, SEED),
@@ -105,14 +98,16 @@ def train_model(
     epochs: int,
     train_per_class: int,
     test_per_class: int,
+    download: bool,
 ) -> dict:
     torch.manual_seed(SEED)
     np.random.seed(SEED)
 
-    x_train, y_train, x_test, y_test = load_cifar10_dataset(
+    x_train, y_train, x_test, y_test = load_emnist_dataset(
         data_root,
         train_per_class=train_per_class,
         test_per_class=test_per_class,
+        download=download,
     )
 
     train_loader = DataLoader(
@@ -121,7 +116,7 @@ def train_model(
         shuffle=True,
     )
 
-    model = TinyCifarMLP()
+    model = TinyEmnistMLP()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-4)
     loss_fn = nn.CrossEntropyLoss()
 
@@ -145,7 +140,7 @@ def train_model(
 
     correct_indices = np.flatnonzero(test_pred == y_test)
     if len(correct_indices) == 0:
-        raise RuntimeError("No correctly classified CIFAR-10 test sample was found.")
+        raise RuntimeError("No correctly classified EMNIST test sample was found.")
 
     logits_np = test_logits.detach().numpy().astype(float)
     sorted_logits = np.sort(logits_np[correct_indices], axis=1)
@@ -157,17 +152,18 @@ def train_model(
     sample_logits = logits_np[sample_index]
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    torch.save(model.state_dict(), output_dir / "tiny_cifar_mlp.pt")
-    write_nnet(model, output_dir / "tiny_cifar_mlp.nnet")
+    torch.save(model.state_dict(), output_dir / "tiny_emnist_mlp.pt")
+    write_nnet(model, output_dir / "tiny_emnist_mlp.nnet")
     np.save(output_dir / "sample.npy", sample)
     save_preview(sample, output_dir / "sample_preview.png")
 
     metadata = {
-        "dataset": "CIFAR-10 test/train data loaded with torchvision.datasets.CIFAR10",
-        "dataset_origin": "CIFAR-10 external image classification benchmark",
-        "preprocessing": "RGB 32x32 -> grayscale -> average pool to 8x8 -> flatten to 64 values in [0, 1]",
+        "dataset": "EMNIST Digits loaded with torchvision.datasets.EMNIST",
+        "dataset_origin": "EMNIST external handwritten character benchmark",
+        "split": SPLIT,
+        "preprocessing": "grayscale 28x28 -> average pool to 14x14 -> flatten to 196 values in [0, 1]",
         "classes": CLASS_NAMES,
-        "architecture": "64 -> 32 ReLU -> 10",
+        "architecture": "196 -> 32 ReLU -> 10",
         "seed": SEED,
         "train_samples_per_class": train_per_class,
         "test_samples_per_class": test_per_class,
@@ -186,12 +182,12 @@ def train_model(
 
 
 def save_preview(sample: np.ndarray, path: Path) -> None:
-    image = np.clip(sample.reshape(8, 8) * 255.0, 0, 255).astype(np.uint8)
-    Image.fromarray(image, mode="L").resize((160, 160), Image.Resampling.NEAREST).save(path)
+    image = np.clip(sample.reshape(14, 14) * 255.0, 0, 255).astype(np.uint8)
+    Image.fromarray(image, mode="L").resize((196, 196), Image.Resampling.NEAREST).save(path)
 
 
-def write_nnet(model: TinyCifarMLP, path: Path) -> None:
-    """Write the trained 64 -> 32 -> 10 ReLU MLP in Marabou .nnet format."""
+def write_nnet(model: TinyEmnistMLP, path: Path) -> None:
+    """Write the trained 196 -> 32 -> 10 ReLU MLP in Marabou .nnet format."""
 
     first = model.net[0]
     second = model.net[2]
@@ -209,7 +205,7 @@ def write_nnet(model: TinyCifarMLP, path: Path) -> None:
 
     layer_sizes = [INPUT_SIZE, HIDDEN_SIZE, OUTPUT_SIZE]
     with path.open("w") as f:
-        f.write("// TinyCifarMLP trained on external CIFAR-10 data for Assignment 3 Problem 2\n")
+        f.write("// TinyEmnistMLP trained on external EMNIST Digits data for Assignment 3 Problem 2\n")
         f.write(f"2,{INPUT_SIZE},{OUTPUT_SIZE},{max(layer_sizes)},\n")
         f.write(",".join(str(size) for size in layer_sizes) + ",\n")
         f.write("0,\n")
@@ -237,9 +233,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output-dir", default=default_output_dir(), type=Path)
     parser.add_argument("--data-root", default=default_data_root(), type=Path)
-    parser.add_argument("--epochs", default=80, type=int)
-    parser.add_argument("--train-per-class", default=500, type=int)
-    parser.add_argument("--test-per-class", default=100, type=int)
+    parser.add_argument("--epochs", default=30, type=int)
+    parser.add_argument("--train-per-class", default=1000, type=int)
+    parser.add_argument("--test-per-class", default=200, type=int)
+    parser.add_argument("--download", action="store_true")
     args = parser.parse_args()
 
     metadata = train_model(
@@ -248,6 +245,7 @@ def main() -> None:
         epochs=args.epochs,
         train_per_class=args.train_per_class,
         test_per_class=args.test_per_class,
+        download=args.download,
     )
     print(json.dumps(metadata, indent=2))
 

@@ -1,19 +1,20 @@
 # Assignment 3 Problem 2
 
-This directory contains a small CIFAR-10 model and a Marabou verification script.
+This directory contains a small EMNIST Digits model and a Marabou verification script.
 
 ## Model and Dataset
 
-- Dataset: CIFAR-10 loaded through `torchvision.datasets.CIFAR10`
-- Preprocessing: RGB 32x32 image -> grayscale -> average pool to 8x8 -> 64
+- Dataset: EMNIST Digits loaded through `torchvision.datasets.EMNIST`
+- Preprocessing: grayscale 28x28 image -> average pool to 14x14 -> 196
   inputs in `[0, 1]`
-- Classes: the 10 CIFAR-10 classes
-- Model: fully connected ReLU network, `64 -> 32 -> 10`
+- Classes: digits `0` through `9`
+- Model: fully connected ReLU network, `196 -> 32 -> 10`
 - Marabou model format: `.nnet`
 
-The CIFAR-10 files are external to Marabou and are not part of Marabou's
-`resources` directory. The script uses `download=False`, so the dataset must
-already exist in the local torchvision cache or be supplied with `--data-root`.
+The EMNIST files are external to Marabou and are not part of Marabou's
+`resources` directory. The script uses `download=False` by default, so the
+dataset must already exist in the local torchvision cache, be supplied with
+`--data-root`, or be fetched once with `--download`.
 
 ## Environment
 
@@ -54,9 +55,10 @@ Train the model and export it to `.nnet`:
 python problem2/train_model.py
 ```
 
-This retraining step requires CIFAR-10 to already be available locally because
-the script intentionally uses `download=False`. The committed artifacts are
-enough to run `test.py` without retraining.
+This retraining step requires EMNIST to already be available locally because
+the script uses `download=False` by default. Run once with `--download` if the
+cache is missing. The committed artifacts are enough to run `test.py` without
+retraining.
 
 Run Marabou verification:
 
@@ -70,11 +72,11 @@ The repository-level `test.py` is the entry point. It calls
 Observed results:
 
 - `epsilon=0.02`: `UNSAT` for all nine non-predicted target classes. The selected
-  CIFAR-10 horse sample is verified against all other classes within this
+  EMNIST digit `0` sample is verified against all other digits within this
   perturbation box.
-- `epsilon=0.2`: `UNSAT` for all non-predicted target classes. No checked class
-  can exceed the horse output by the configured margin within this larger
-  perturbation box.
+- `epsilon=0.2`: `SAT` for target digit `8`. Marabou finds an input in the
+  larger perturbation box where digit `8` exceeds the original digit `0` score
+  by the configured margin.
 
 ## Query
 

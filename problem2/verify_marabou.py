@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run Marabou on the external TinyCifarMLP model.
+"""Run Marabou on the external TinyEmnistMLP model.
 
 The query checks local L-infinity robustness around one correctly classified
 test image. For each competing class j, Marabou searches for an input x' within
@@ -12,6 +12,8 @@ box.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import os
 import sys
@@ -33,18 +35,7 @@ for marabou_root in candidate_roots:
 from maraboupy import Marabou
 
 
-CLASS_NAMES = [
-    "airplane",
-    "automobile",
-    "bird",
-    "cat",
-    "deer",
-    "dog",
-    "frog",
-    "horse",
-    "ship",
-    "truck",
-]
+CLASS_NAMES = [str(i) for i in range(10)]
 
 
 def solve_target(
@@ -73,7 +64,8 @@ def solve_target(
 
     options = Marabou.createOptions(timeoutInSeconds=timeout, verbosity=0)
     start = time.perf_counter()
-    exit_code, values, stats = network.solve(options=options)
+    with contextlib.redirect_stdout(io.StringIO()):
+        exit_code, values, stats = network.solve(options=options)
     elapsed = time.perf_counter() - start
 
     result = "SAT" if exit_code == "sat" else "UNSAT" if exit_code == "unsat" else str(exit_code).upper()
@@ -107,7 +99,7 @@ def run_verification(
     timeout: int,
     margin: float,
 ) -> dict:
-    nnet_path = artifact_dir / "tiny_cifar_mlp.nnet"
+    nnet_path = artifact_dir / "tiny_emnist_mlp.nnet"
     sample_path = artifact_dir / "sample.npy"
     metadata_path = artifact_dir / "metadata.json"
 

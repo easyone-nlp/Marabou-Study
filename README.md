@@ -8,12 +8,12 @@ verification example.
 - `problem1_resources.md`: exploration report for the official Marabou
   `resources/` directory.
 - `problem2/`: external model experiment.
-  - `train_model.py`: loads CIFAR-10 from a local torchvision cache,
-    preprocesses images to 8x8 grayscale, trains a small ReLU MLP, and exports
+  - `train_model.py`: loads EMNIST Digits from a local torchvision cache,
+    preprocesses images to 14x14 grayscale, trains a small ReLU MLP, and exports
     it to Marabou `.nnet`.
   - `verify_marabou.py`: implements the Marabou L-infinity robustness query.
-  - `artifacts/tiny_cifar_mlp.nnet`: exported model used by the verification script.
-  - `artifacts/sample_preview.png`: selected CIFAR-10 sample after preprocessing.
+  - `artifacts/tiny_emnist_mlp.nnet`: exported model used by the verification script.
+  - `artifacts/sample_preview.png`: selected EMNIST sample after preprocessing.
   - `artifacts/verification_eps_0.02.json`: UNSAT robustness result.
   - `artifacts/verification_eps_0.2.json`: UNSAT robustness result for a larger
     perturbation box.
@@ -55,15 +55,15 @@ python test.py --epsilon 0.2 --timeout 30
 ```
 
 The committed `problem2/artifacts/` files are enough to run verification.
-Retraining with `python problem2/train_model.py` requires a local CIFAR-10 cache
-or a `--data-root` pointing to `cifar-10-batches-py`.
+Retraining with `python problem2/train_model.py` requires a local EMNIST cache,
+or run once with `python problem2/train_model.py --download`.
 
 Observed results:
 
 - `epsilon=0.02`: `UNSAT`, no checked target class can beat the predicted class
   by the required margin inside the perturbation box.
-- `epsilon=0.2`: `UNSAT`, the selected high-margin CIFAR-10 sample remains
-  verified against all target classes for this tested radius.
+- `epsilon=0.2`: `SAT`, Marabou finds a counterexample where the target digit
+  `8` beats the original predicted digit `0` by the required margin.
 
 ## Notes
 

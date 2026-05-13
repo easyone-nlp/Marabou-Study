@@ -2,24 +2,21 @@
 
 ## Model and Dataset
 
-For Problem 2, I used CIFAR-10 as the external dataset. CIFAR-10 is not part of
-the official Marabou `resources` directory. The script loads it with
-`torchvision.datasets.CIFAR10` using `download=False`, then preprocesses each
-RGB 32x32 image into an 8x8 grayscale input by average pooling.
+For Problem 2, I used EMNIST Digits as the external dataset. EMNIST is not part
+of the official Marabou `resources` directory. The script loads it with
+`torchvision.datasets.EMNIST`, then preprocesses each 28x28 grayscale image
+into a 14x14 input by average pooling.
 
-The model is a fully connected ReLU network with architecture `64 -> 32 -> 10`.
+The model is a fully connected ReLU network with architecture `196 -> 32 -> 10`.
 It is intentionally small because Marabou can time out on large models. The
-trained model reached 33.12% accuracy on the balanced training subset and 28.1%
-accuracy on the balanced test subset. The accuracy is modest because the
-network sees only a heavily compressed grayscale version of CIFAR-10, but it is
-small enough for fast formal verification. The trained model was exported to
-Marabou's `.nnet` format as `problem2/artifacts/tiny_cifar_mlp.nnet`.
+trained model reached 99.2% accuracy on the balanced training subset and 95.65%
+accuracy on the balanced test subset. The trained model was exported to
+Marabou's `.nnet` format as `problem2/artifacts/tiny_emnist_mlp.nnet`.
 
 ## Verification Query
 
-I selected one correctly classified CIFAR-10 test sample predicted as class 7
-(`horse`). The verification query checks local robustness under an L-infinity
-perturbation:
+I selected one correctly classified EMNIST test sample predicted as digit `0`.
+The verification query checks local robustness under an L-infinity perturbation:
 
 `||x' - x||_inf <= epsilon`
 
@@ -38,10 +35,11 @@ radius, no checked target class can beat the original predicted class by the
 required margin. The selected input is therefore verified robust within that
 perturbation box.
 
-For `epsilon=0.2`, Marabou also returned `UNSAT` for all nine target classes.
-This does not mean the model is generally robust on CIFAR-10; it only proves
-the stated property for the selected preprocessed input, the selected model, and
-the specified perturbation box.
+For `epsilon=0.2`, Marabou returned `SAT` for target digit `8`. The
+counterexample stays within the larger perturbation box, but changes the output
+ordering so that digit `8` exceeds the original digit `0` score by the required
+margin. This shows that the verified property depends strongly on the chosen
+perturbation radius.
 
 The saved JSON outputs are:
 
@@ -57,7 +55,7 @@ input region.
 
 The main limitation I observed is environment and scalability. Large models are
 not practical for this assignment, so I used a very small ReLU network and
-compressed CIFAR-10 inputs to 64 features. I also had to build Marabou from
+compressed EMNIST inputs to 196 features. I also had to build Marabou from
 source in the local environment because the prebuilt
 `maraboupy` wheel imported correctly but exited during solving. OpenBLAS CPU
 autodetection failed under the QEMU virtual CPU, so OpenBLAS was manually built
