@@ -1,4 +1,6 @@
 cmake
 torch
+torchvision
 numpy
+pillow
 maraboupy==2.0.0

@@ -2,23 +2,24 @@
 
 ## Model and Dataset
 
-For Problem 2, I used a small external dataset generated locally in
-`problem2/train_model.py`. The dataset contains synthetic 8x8 grayscale images
-with three classes: vertical bar, horizontal bar, and diagonal bar. This dataset
-is not part of the official Marabou `resources` directory and does not require
-network downloads.
+For Problem 2, I used CIFAR-10 as the external dataset. CIFAR-10 is not part of
+the official Marabou `resources` directory. The script loads it with
+`torchvision.datasets.CIFAR10` using `download=False`, then preprocesses each
+RGB 32x32 image into an 8x8 grayscale input by average pooling.
 
-The model is a fully connected ReLU network with architecture `64 -> 8 -> 3`.
-It is intentionally small because Marabou can time out on large models. After
-training, the model reached 100% accuracy on the generated train and test split.
-The trained model was exported to Marabou's `.nnet` format as
-`problem2/artifacts/tiny_bars.nnet`.
+The model is a fully connected ReLU network with architecture `64 -> 32 -> 10`.
+It is intentionally small because Marabou can time out on large models. The
+trained model reached 33.12% accuracy on the balanced training subset and 28.1%
+accuracy on the balanced test subset. The accuracy is modest because the
+network sees only a heavily compressed grayscale version of CIFAR-10, but it is
+small enough for fast formal verification. The trained model was exported to
+Marabou's `.nnet` format as `problem2/artifacts/tiny_cifar_mlp.nnet`.
 
 ## Verification Query
 
-I selected one correctly classified test sample predicted as class 0
-(`vertical_bar`). The verification query checks local robustness under an
-L-infinity perturbation:
+I selected one correctly classified CIFAR-10 test sample predicted as class 7
+(`horse`). The verification query checks local robustness under an L-infinity
+perturbation:
 
 `||x' - x||_inf <= epsilon`
 
@@ -31,20 +32,21 @@ the result is `UNSAT`.
 
 ## Results
 
-For `epsilon=0.02`, Marabou returned `UNSAT` for both target classes. This means
-that, for the selected sample and this small perturbation radius, no checked
-target class can beat the original predicted class by the required margin. The
-selected input is therefore verified robust within that perturbation box.
+For `epsilon=0.02`, Marabou returned `UNSAT` for all nine non-predicted target
+classes. This means that, for the selected sample and this small perturbation
+radius, no checked target class can beat the original predicted class by the
+required margin. The selected input is therefore verified robust within that
+perturbation box.
 
-For `epsilon=0.3`, Marabou returned `SAT` for both target classes. This larger
-perturbation radius allows Marabou to find counterexamples where a target class
-exceeds the original predicted class output by the required margin. This shows
-that the verification result depends strongly on the perturbation radius.
+For `epsilon=0.2`, Marabou also returned `UNSAT` for all nine target classes.
+This does not mean the model is generally robust on CIFAR-10; it only proves
+the stated property for the selected preprocessed input, the selected model, and
+the specified perturbation box.
 
 The saved JSON outputs are:
 
 - `problem2/artifacts/verification_eps_0.02.json`
-- `problem2/artifacts/verification_eps_0.3.json`
+- `problem2/artifacts/verification_eps_0.2.json`
 
 ## Discussion
 
@@ -54,8 +56,9 @@ defined neural-network property. The result is stronger than empirical testing:
 input region.
 
 The main limitation I observed is environment and scalability. Large models are
-not practical for this assignment, so a small ReLU network was used. I also had
-to build Marabou from source in the local environment because the prebuilt
+not practical for this assignment, so I used a very small ReLU network and
+compressed CIFAR-10 inputs to 64 features. I also had to build Marabou from
+source in the local environment because the prebuilt
 `maraboupy` wheel imported correctly but exited during solving. OpenBLAS CPU
 autodetection failed under the QEMU virtual CPU, so OpenBLAS was manually built
 with `TARGET=NEHALEM` before building Marabou.

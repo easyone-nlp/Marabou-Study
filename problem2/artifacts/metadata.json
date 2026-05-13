@@ -1,21 +1,41 @@
 {
-  "dataset": "Synthetic 8x8 BarsDataset generated in train_model.py",
+  "dataset": "CIFAR-10 test/train data loaded with torchvision.datasets.CIFAR10",
+  "dataset_origin": "CIFAR-10 external image classification benchmark",
+  "preprocessing": "RGB 32x32 -> grayscale -> average pool to 8x8 -> flatten to 64 values in [0, 1]",
   "classes": [
-    "vertical_bar",
-    "horizontal_bar",
-    "diagonal_bar"
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck"
   ],
-  "architecture": "64 -> 8 ReLU -> 3",
+  "architecture": "64 -> 32 ReLU -> 10",
   "seed": 7,
-  "samples_per_class": 240,
-  "train_accuracy": 1.0,
-  "test_accuracy": 1.0,
-  "sample_index_in_test_split": 0,
-  "sample_label": 0,
-  "sample_prediction": 0,
+  "train_samples_per_class": 500,
+  "test_samples_per_class": 100,
+  "train_accuracy": 0.3312,
+  "test_accuracy": 0.281,
+  "sample_index_in_balanced_test_subset": 764,
+  "sample_label": 7,
+  "sample_label_name": "horse",
+  "sample_prediction": 7,
+  "sample_prediction_name": "horse",
   "sample_logits": [
-    5.6500420570373535,
-    -4.213935375213623,
-    -5.431303024291992
-  ]
+    0.10193169116973877,
+    -1.4798314571380615,
+    -0.16483306884765625,
+    -0.3119649291038513,
+    -1.296942949295044,
+    -1.038222312927246,
+    -0.9136956930160522,
+    2.8819167613983154,
+    -4.420767307281494,
+    -0.5229277014732361
+  ],
+  "sample_logit_margin": 2.7799850702285767
 }

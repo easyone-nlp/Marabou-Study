@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run Marabou on the external TinyBarsNet model.
+"""Run Marabou on the external TinyCifarMLP model.
 
 The query checks local L-infinity robustness around one correctly classified
 test image. For each competing class j, Marabou searches for an input x' within
@@ -33,7 +33,18 @@ for marabou_root in candidate_roots:
 from maraboupy import Marabou
 
 
-CLASS_NAMES = ["vertical_bar", "horizontal_bar", "diagonal_bar"]
+CLASS_NAMES = [
+    "airplane",
+    "automobile",
+    "bird",
+    "cat",
+    "deer",
+    "dog",
+    "frog",
+    "horse",
+    "ship",
+    "truck",
+]
 
 
 def solve_target(
@@ -96,7 +107,7 @@ def run_verification(
     timeout: int,
     margin: float,
 ) -> dict:
-    nnet_path = artifact_dir / "tiny_bars.nnet"
+    nnet_path = artifact_dir / "tiny_cifar_mlp.nnet"
     sample_path = artifact_dir / "sample.npy"
     metadata_path = artifact_dir / "metadata.json"
 
@@ -108,9 +119,10 @@ def run_verification(
     sample = np.load(sample_path).astype(float)
     metadata = json.loads(metadata_path.read_text())
     true_class = int(metadata["sample_prediction"])
+    class_names = metadata.get("classes", CLASS_NAMES)
 
     per_target = []
-    for target_class in range(len(CLASS_NAMES)):
+    for target_class in range(len(class_names)):
         if target_class == true_class:
             continue
         per_target.append(
@@ -133,7 +145,9 @@ def run_verification(
         "timeout_per_target_seconds": timeout,
         "sample_label": int(metadata["sample_label"]),
         "sample_prediction": true_class,
-        "sample_prediction_name": CLASS_NAMES[true_class],
+        "sample_prediction_name": class_names[true_class],
+        "dataset": metadata.get("dataset"),
+        "architecture": metadata.get("architecture"),
         "interpretation": (
             "SAT means at least one adversarial counterexample exists in the epsilon box; "
             "UNSAT means no checked target class can beat the predicted class by the "
